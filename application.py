@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request
 import joblib
 import numpy as np
-import joblib
+import pickle
 
 app = Flask(__name__)
-# scaler = pickle.load(open('scaler.pkl','rb'))
+scaler = pickle.load(open('scaler.pkl','rb'))
 
 @app.route("/")
 def index():
@@ -12,7 +12,7 @@ def index():
 
 
 @app.route("/result", methods=['POST', 'GET'])
-def result():
+def result(): 
     gender = (request.form['gender'])
     age = (request.form['age'])
     hypertension = (request.form['hypertension'])
@@ -20,16 +20,16 @@ def result():
     ever_married = (request.form['ever_married'])
     work_type = (request.form['work_type'])
     Residence_type = (request.form['Residence_type'])
-    avg_glucose_level = float(request.form['avg_glucose_level'])
-    bmi = float(request.form['bmi'])
+    avg_glucose_level = (request.form['avg_glucose_level'])
+    bmi = (request.form['bmi'])
     smoking_status = (request.form['smoking_status'])
 
     x=np.array([gender, age, hypertension, heart_disease, ever_married, work_type,
                 Residence_type, avg_glucose_level, bmi, smoking_status]).reshape(1, -1)
 
   
-    # x = scaler.transform(x)
-    svc = joblib.load("stroke.joblib") 
+    x = scaler.transform(x)
+    svc = pickle.load(open("Strokemodel.pkl","rb")) 
     y_pred = svc.predict(x)
 
     # if No Stroke Risk
